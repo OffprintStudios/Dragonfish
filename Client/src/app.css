@@ -21,6 +21,14 @@
     --font-serif: "Josefin Slab", serif;
 
     --bg-pattern: url("data:image/svg+xml,%3Csvg width='6' height='6' viewBox='0 0 6 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%239C92AC' fill-opacity='0.2' fill-rule='evenodd'%3E%3Cpath d='M5 0h1L0 6V5zM6 5v1H5z'/%3E%3C/g%3E%3C/svg%3E");
+
+    /* These values are specific to the Create & View pages */
+    --color-cr-background: var(--cr-background);
+    --color-cr-text: var(--cr-text-color);
+    --color-cr-tool: var(--cr-tool-color);
+    --color-cr-header: var(--cr-header-color);
+    --color-cr-select: var(--cr-select-bg);
+    --color-cr-hover: var(--cr-button-hover);
 }
 
 @utility default-shadow {
@@ -146,6 +154,62 @@ div.empty > p {
     --accent-dark: 50, 82, 34;
     --accent-light: 137, 171, 121;
     @apply transition-all;
+}
+
+/* Create & View Themes */
+.white {
+    --cr-background: rgb(255, 255, 255);
+    --cr-text-color: rgb(39, 39, 39);
+    --cr-button-hover: rgb(234, 229, 217);
+    --cr-tool-color: rgb(37, 37, 37);
+    --cr-header-color: rgb(68, 123, 181);
+    --cr-tool-header-color: var(--cr-text-color);
+    --cr-select-bg: rgba(234, 229, 217, 1);
+    --cr-dropdown-bg: var(--cr-background);
+}
+
+.paper {
+    --cr-background: rgb(247, 241, 228);
+    --cr-text-color: rgb(39, 39, 39);
+    --cr-button-hover: rgb(234, 229, 217);
+    --cr-tool-color: rgb(192, 154, 63);
+    --cr-header-color: rgb(192, 154, 63);
+    --cr-tool-header-color: var(--cr-tool-color);
+    --cr-select-bg: rgba(192, 154, 63, 0.25);
+    --cr-dropdown-bg: var(--cr-background);
+}
+
+.slate {
+    --cr-background: rgb(72, 72, 74);
+    --cr-text-color: rgb(213, 213, 213);
+    --cr-button-hover: rgb(81, 81, 83);
+    --cr-tool-color: rgb(255, 255, 255);
+    --cr-header-color: rgb(68, 123, 181);
+    --cr-tool-header-color: var(--section-text-color);
+    --cr-select-bg: rgba(81, 81, 83, 1);
+    --cr-dropdown-bg: var(--section-background);
+}
+
+.dimmed {
+    --cr-background: rgb(44, 44, 46);
+    --cr-text-color: rgb(186, 186, 186);
+    --cr-button-hover: rgb(55, 55, 56);
+    --cr-tool-color: rgb(255, 255, 255);
+    --cr-header-color: rgb(66, 120, 176);
+    --cr-tool-header-color: var(--section-text-color);
+    --cr-select-bg: rgba(55, 55, 56, 1);
+    --cr-dropdown-bg: var(--section-background);
+}
+
+.ink {
+    --cr-background: rgb(0, 0, 0);
+    --cr-text-color: rgb(186, 186, 186);
+    --cr-button-hover: rgb(55, 55, 56);
+    --cr-tool-color: rgb(255, 255, 255);
+    --cr-header-color: rgb(66, 120, 176);
+    --cr-tool-header-color: var(--section-text-color);
+    --cr-select-bg: rgba(55, 55, 56, 1);
+    --cr-dropdown-bg: var(--section-background);
 }
 
 /* Articles */

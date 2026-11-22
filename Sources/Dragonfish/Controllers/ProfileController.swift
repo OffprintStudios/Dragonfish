@@ -8,13 +8,13 @@ struct ProfileController: RouteCollection {
 
         profiles.group(":profileID") { route in 
             route.get("", use: getProfile)
-            route.get("blogs", use: getPublicBlogs)
-            route.group(
-                Session.Token.authenticator(), 
-                Session.Token.guardMiddleware(), 
-                IdentityGuard(needs: [.user], checkProfile: true),
-            ) { secureRoute in 
-                secureRoute.get("blogs/all", use: getAllBlogs)
+            route.group("blogs") { blogs in 
+                blogs.get("", use: getPublicBlogs)
+                blogs.grouped(
+                    Session.Token.authenticator(), 
+                    Session.Token.guardMiddleware(), 
+                    IdentityGuard(needs: [.user], checkProfile: true),
+                ).get("all", use: getAllBlogs)
             }
         }
     }

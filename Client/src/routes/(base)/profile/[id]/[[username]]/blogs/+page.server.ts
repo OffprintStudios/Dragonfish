@@ -3,19 +3,11 @@ import type { Blog } from "#lib/models/blogs";
 import type { Paginate } from "#lib/models/util/tools";
 import { error } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
-import { SESSION_TOKEN_KEY } from "#lib/util/constants";
 
-export const load: PageServerLoad = async ({ params, fetch, cookies }) => {
+export const load: PageServerLoad = async ({ params, fetch }) => {
     const id = params.id;
-    const token = cookies.get(SESSION_TOKEN_KEY);
-    let headers = {};
-    if (token) {
-        headers = {
-            "Authorization": `Bearer ${token}`
-        }
-    }
 
-    const apiResponse = await fetch(`${BASE_URL}/profiles/${id}/blogs`, { method: "GET", headers });
+    const apiResponse = await fetch(`${BASE_URL}/profiles/${id}/blogs`, { method: "GET" });
     
     if (apiResponse.ok) {
         return { blogs: (await apiResponse.json()) as Paginate<Blog> };
