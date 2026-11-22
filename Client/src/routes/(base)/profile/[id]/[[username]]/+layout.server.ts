@@ -14,5 +14,5 @@ export const load: LayoutServerLoad = async ({ params, fetch }) => {
         return { profile: (await apiResponse.json()) as Profile };
     }
 
-    error(apiResponse.status, apiResponse.statusText);
+    throw error(apiResponse.status, apiResponse.statusText);
 }

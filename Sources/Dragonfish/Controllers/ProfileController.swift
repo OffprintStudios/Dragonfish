@@ -1,19 +1,27 @@
 import Vapor
 import Fluent
+import JWT
 
 struct ProfileController: RouteCollection {
     func boot(routes: any RoutesBuilder) throws {
         let profiles = routes.grouped("profiles")
 
-        profiles.group(":id") { route in 
+        profiles.group(":profileID") { route in 
             route.get("", use: getProfile)
-            route.grouped(IdentityGuard(needs: [.user], optional: true)).get("blogs", use: getBlogs)
+            route.get("blogs", use: getPublicBlogs)
+            route.group(
+                Session.Token.authenticator(), 
+                Session.Token.guardMiddleware(), 
+                IdentityGuard(needs: [.user], checkProfile: true),
+            ) { secureRoute in 
+                secureRoute.get("blogs/all", use: getAllBlogs)
+            }
         }
     }
 
     @Sendable
     func getProfile(request: Request) async throws -> ProfileObject {
-        let id = request.parameters.get("id")!
+        let id = request.parameters.get("profileID")!
 
         guard let profile = try await Profile.find(id, on: request.db) else {
             throw Abort(.notFound, reason: "You are lost in a sea of faces, traveler. Where will you go next?")
@@ -23,15 +31,9 @@ struct ProfileController: RouteCollection {
     }
 
     @Sendable
-    func getBlogs(request: Request) async throws -> Page<BlogObject> {
-        let id = request.parameters.get("id")!
+    func getPublicBlogs(request: Request) async throws -> Page<BlogObject> {
+        let id = request.parameters.get("profileID")!
         let includesNSFW = request.query[Bool.self, at: "nsfw"] ?? false
-
-        if let account = request.user?.account {
-            if let profile = try await account.$profiles.query(on: request.db).filter(\.$id == id).first() {
-                return try await profile.$blogs.query(on: request.db).paginate(for: request).map { $0.toObject() }
-            }
-        }
 
         let validStates: [ContentVisibility] = [.profile, .public]
         var query = Blog.query(on: request.db)
@@ -44,5 +46,14 @@ struct ProfileController: RouteCollection {
             query = query.filter(\.$nsfw == false)
         }
         return try await query.paginate(for: request).map { $0.toObject() }
+    }
+
+    @Sendable
+    func getAllBlogs(request: Request) async throws -> Page<BlogObject> {
+        guard let profile = request.user?.profile else {
+            throw Abort(.unauthorized, reason: "You don't have permission to do that!")
+        }
+
+        return try await profile.$blogs.query(on: request.db).paginate(for: request).map { $0.toObject() }
     }
 }

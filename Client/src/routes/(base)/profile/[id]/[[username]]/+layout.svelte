@@ -74,7 +74,7 @@
             <div class="my-1"><RoleBadge allRoles={['User']} /></div>
             <div class="flex items-center text-zinc-500 dark:text-zinc-400 text-xs md:text-sm">
                 <a href={resolve("/(base)/profile/[id]/[[username]]/followers", { id: data.profile!.id, username: data.profile!.username })}>
-                    {`${abbreviate(data.profile!.followers)} follow${pluralize(data.profile!.followers)}`}
+                    {`${abbreviate(data.profile!.followers)} follower${pluralize(data.profile!.followers)}`}
                 </a>
                 <span class="mx-1">•</span>
                 <a href={resolve("/(base)/profile/[id]/[[username]]/following", { id: data.profile!.id, username: data.profile!.username })}>

@@ -7,50 +7,34 @@ struct AccountController: RouteCollection {
         let accounts = routes.grouped("accounts")
         let secure = accounts.grouped(
             Session.Token.authenticator(), 
-            Session.Token.guardMiddleware(), 
-            IdentityGuard(needs: [.user])
+            Session.Token.guardMiddleware()
         )
 
-        secure.post("verify", use: verifyOwnership) 
-
         secure.group("profiles") { profiles in 
-            profiles.get("all", use: getAll)
-            profiles.post("create", use: createProfile)
-            profiles.group(":id") { ops in 
-                ops.patch("update", use: updateProfile)
-                ops.patch("avatar", use: changeAvatar)
-                ops.patch("banner", use: changeBanner)
-                ops.delete("delete", use: deleteProfile)
+            profiles.grouped(IdentityGuard(needs: [.user])).get("all", use: getAll)
+            profiles.grouped(IdentityGuard(needs: [.user])).post("create", use: createProfile)
+            profiles.group(":profileID") { ops in 
+                let guarded = ops.grouped(IdentityGuard(needs: [.user], checkProfile: true))
+
+                guarded.get("verify", use: verifyOwnership)
+                guarded.patch("update", use: updateProfile)
+                guarded.patch("avatar", use: changeAvatar)
+                guarded.patch("banner", use: changeBanner)
+                guarded.delete("delete", use: deleteProfile)
             }
         }
-    }
-
-    // Account routes
-    @Sendable
-    func verifyOwnership(request: Request) async throws -> HTTPResponseStatus {
-        struct VerifyInfo: Content, Validatable {
-            let profileID: String
-
-            static func validations(_ validations: inout Validations) {
-                validations.add("profileID", as: String.self)
-            }
-        }
-
-        try VerifyInfo.validate(content: request)
-        let toVerify = try request.content.decode(VerifyInfo.self)
-
-        guard let account = request.user?.account else {
-            throw Abort(.unauthorized, reason: "You don't have permission to do that.")
-        }
-
-        if try await account.$profiles.query(on: request.db).filter(\.$id == toVerify.profileID).first() != nil {
-            return .ok
-        }
-
-        return .forbidden
     }
 
     // Profile routes
+    @Sendable
+    func verifyOwnership(request: Request) async throws -> HTTPResponseStatus {
+        guard request.user?.profile != nil else {
+            throw Abort(.unauthorized, reason: "You don't have permission to do that.")
+        }
+
+        return .ok
+    }
+
     @Sendable
     func getAll(request: Request) async throws -> [ProfileObject] { 
         guard let account = request.user?.account else {

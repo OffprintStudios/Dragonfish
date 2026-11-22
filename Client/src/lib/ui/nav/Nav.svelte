@@ -6,14 +6,13 @@
 	import { AuthState } from "#lib/state/auth.svelte";
     import { Guide } from "./guide";
     import { Popup } from "#lib/ui/misc";
-	import { slugify } from "#lib/util/functions.ts";
     
     let auth = AuthState.useState();
     let showCreateMenu = $state(false);
 </script>
 
 <div class="sticky top-0 w-full z-50 border-b border-white/25 backdrop-blur-lg bg-accent">
-    <div class="flex items-center h-13.75 mx-4 relative">
+    <div class="flex items-center h-13.75 mx-4 md:mx-auto relative max-w-344">
         <div class="flex items-center w-1/3">
             <a
                 class="flex items-center"
@@ -46,7 +45,7 @@
             <div class="flex-1"></div>
             {#if auth.currProfile}
                 <button
-                    class="hidden md:flex items-center text-white px-3 py-2 firefox:text-sm rounded-xl transition hover:bg-zinc-300/25 hover:backdrop-blur"
+                    class="hidden md:flex items-center text-white px-3 py-2 firefox:text-sm rounded-xl transition hover:bg-zinc-300/25 hover:backdrop-blur cursor-pointer"
                     onclick={() => showCreateMenu = true}
                 >
                     <span class="relative mr-1.5"><IconLoader size="22px" /></span>
@@ -63,7 +62,7 @@
                         </span>
                         <div class="flex items-center mt-8">
                             <a 
-                                href={resolve("/(base)/profile/[id]/[[username]]/works", { id: auth.currProfile!.id, username: slugify(auth.currProfile!.username) })}
+                                href={resolve("/create/works")}
                                 class="flex flex-col items-center justify-center min-w-49 min-h-41.75 p-8 rounded-xl bg-zinc-300/50 dark:bg-zinc-600/50 transition hover:bg-zinc-500/50 dark:hover:bg-zinc-400/50"
                             >
                                 <span><IconFeather size="75px" /></span>
@@ -71,7 +70,7 @@
                             </a>
                             <div class="mx-1"></div>
                             <a
-                                href={resolve("/(base)/profile/[id]/[[username]]/works", { id: auth.currProfile!.id, username: slugify(auth.currProfile!.username) })}
+                                href={resolve("/create/works")}
                                 class="flex flex-col items-center justify-center min-w-49 min-h-41.75 p-8 rounded-xl bg-zinc-300/50 dark:bg-zinc-600/50 transition hover:bg-zinc-500/50 dark:hover:bg-zinc-400/50"
                             >
                                 <span><IconMoodHappy size="75px" /></span>
@@ -79,7 +78,7 @@
                             </a>
                             <div class="mx-1"></div>
                             <a
-                                href={resolve("/(base)/profile/[id]/[[username]]/blogs", { id: auth.currProfile!.id, username: slugify(auth.currProfile!.username) })}
+                                href={resolve("/create/blogs")}
                                 class="flex flex-col items-center justify-center min-w-49 min-h-41.75 p-8 rounded-xl bg-zinc-300/50 dark:bg-zinc-600/50 transition hover:bg-zinc-500/50 dark:hover:bg-zinc-400/50"
                             >
                                 <span class="relative left-1.5"><IconCoffee size="75px" /></span>
@@ -88,7 +87,7 @@
                         </div>
                         <a 
                             class="text-center w-full pt-4 text-zinc-500 dark:text-zinc-400 text-sm hover:underline" 
-                            href={resolve("/(base)/profile/[id]/[[username]]", { id: auth.currProfile!.id, username: slugify(auth.currProfile!.username) })}
+                            href={resolve("/create")}
                         >
                             See Overview
                         </a>

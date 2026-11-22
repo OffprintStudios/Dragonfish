@@ -18,12 +18,8 @@ export const load: PageServerLoad = async ({ cookies }) => {
         },
     });
 
-    if (apiResponse.ok) {
-        const result: Profile[] = await apiResponse.json();
-        return { profiles: result };
-    } else {
-        error(apiResponse.status, apiResponse.statusText);
-    }
+    if (apiResponse.ok) return { profiles: (await apiResponse.json()) as Profile[] };
+    throw error(apiResponse.status, apiResponse.statusText);
 }
 
 export const actions = {
@@ -31,14 +27,13 @@ export const actions = {
         const data = await request.formData();
         const profileID = data.get('profileID')?.toString();
 
-        const apiResponse = await fetch(`${BASE_URL}/accounts/verify`, {
-            method: 'POST',
-            body: JSON.stringify({ profileID }),
+        const apiResponse = await fetch(`${BASE_URL}/accounts/profiles/${profileID}/verify`, {
+            method: 'GET',
             headers: {
                 "Authorization": `Bearer ${cookies.get(SESSION_TOKEN_KEY)}`,
-                "Content-Type": "application/json"
             }
         });
+        
         if (apiResponse.ok) {
             cookies.delete(PROFILE_ID_KEY, { path: "/" });
             cookies.set(PROFILE_ID_KEY, profileID!, {

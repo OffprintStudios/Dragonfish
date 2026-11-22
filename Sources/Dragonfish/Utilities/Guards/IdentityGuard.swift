@@ -31,12 +31,13 @@ struct IdentityGuard: AsyncMiddleware {
         }
 
         if checkProfile == true {
-            guard let profileId: String = request.query["profileID"] else {
+            let possibleID = request.parameters.get("profileID") ?? request.query["profileID"]
+            guard let profileID = possibleID else {
                 throw Abort(.badRequest, reason: "You must include a `profileID` in your query parameters!")
             }
 
-            guard let profile = try? await account.$profiles.query(on: request.db).filter(\.$id == profileId).first() else {
-                request.logger.error("An attempt to authorize a profile's access level has failed. [Profile ID: \(profileId)] [Account ID: \(account.id?.uuidString ?? "")]")
+            guard let profile = try? await account.$profiles.query(on: request.db).filter(\.$id == profileID).first() else {
+                request.logger.error("An attempt to authorize a profile's access level has failed. [Profile ID: \(profileID)] [Account ID: \(account.id?.uuidString ?? "")]")
                 throw Abort(.unauthorized, reason: "You don't have permission to do that!")
             }
 
