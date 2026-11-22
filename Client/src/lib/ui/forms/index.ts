@@ -2,3 +2,4 @@ export { default as Switch } from './Switch.svelte';
 export { default as TextArea } from './TextArea.svelte';
 export { default as TextField } from './TextField.svelte';
 export { default as Editor } from './Editor.svelte';
+export { default as CrEditor } from './CrEditor.svelte';

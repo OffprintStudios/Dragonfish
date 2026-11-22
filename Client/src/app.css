@@ -278,6 +278,39 @@ article {
     }
 }
 
+.cr-button {
+    @apply flex items-center justify-center px-2.5 py-2 transition transform focus:ring-0 m-0 text-sm select-none rounded-lg relative all-small-caps font-semibold z-5 cursor-pointer;
+    letter-spacing: 1px;
+    color: white;
+    font-family: var(--body-text), sans-serif;
+    background: var(--cr-header-color);
+
+    &:hover {
+        color: var(--cr-header-color);
+        background: var(--cr-select-bg);
+    }
+
+    & > span.button-icon {
+        @apply mr-1.5 relative;
+    }
+
+    & > span.button-icon.no-text {
+        @apply mr-0 py-1;
+    }
+
+    & > span.button-icon.variable-text {
+        @apply mr-0 lg:mr-1.5 relative;
+    }
+
+    & > span.button-text {
+        @apply relative text-sm top-[-0.05rem];
+    }
+
+    & > span.button-small-text {
+        @apply text-sm font-medium;
+    }
+}
+
 :-moz-any(.btn) {
     @apply text-sm;
 }

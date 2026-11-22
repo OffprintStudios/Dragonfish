@@ -35,6 +35,7 @@
 		"@types/node": "^26",
 		"@types/numbro": "^1.9.3",
 		"@types/slug": "^5.0.9",
+		"@types/turndown": "^5.0.6",
 		"bits-ui": "^2.20.6",
 		"dompurify": "^3.4.18",
 		"eslint": "^10.4.1",
@@ -53,6 +54,7 @@
 		"tailwind-scrollbar": "^4.0.2",
 		"tailwindcss": "^4.3.0",
 		"tailwindcss-motion": "^1.1.1",
+		"turndown": "^7.2.5",
 		"typescript": "^6.0.3",
 		"typescript-eslint": "^8.60.1",
 		"vite": "^8.3.0"

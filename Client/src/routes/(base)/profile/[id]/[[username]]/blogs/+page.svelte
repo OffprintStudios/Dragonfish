@@ -1,12 +1,11 @@
 <script lang="ts">
     import { AuthState } from "#lib/state/auth.svelte";
     import type { PageProps } from "./$types";
-    import { LinkBlock, Button } from "#lib/ui/misc";
-    import { IconNewSection, IconCards, IconListDetails, IconSearch } from "@tabler/icons-svelte";
+    import { LinkBlock } from "#lib/ui/misc";
+    import { IconNewSection, IconSearch } from "@tabler/icons-svelte";
 
     let auth = AuthState.useState();
     let { data }: PageProps = $props();
-    let cardView = $state(true);
 </script>
 
 <div
@@ -17,30 +16,12 @@
         <LinkBlock
             id="add-new"
             title="Add New Blog"
-            href="/create/blogs"
+            href="/create/blogs/new"
             primary
         >
             <span class="button-icon"><IconNewSection size="1.125rem" /></span>
             <span class="button-text">Add</span>
         </LinkBlock>
-        <span class="mx-2 relative -top-0.5 text-4xl font-extralight text-zinc-300 dark:text-zinc-600">|</span>
-        <Button
-            id="card-view"
-            title="Card View"
-            onclick={() => cardView = true}
-            active={cardView}
-        >
-            <span class="button-icon no-text py-[0.075rem]!"><IconCards size="1.125rem" /></span>
-        </Button>
-        <span class="mx-0.5"></span>
-        <Button
-            id="list-view"
-            title="List View"
-            onclick={() => cardView = false}
-            active={!cardView}
-        >
-            <span class="button-icon no-text py-[0.075rem]!"><IconListDetails size="1.125rem" /></span>
-        </Button>
     {/if}
     <div class="flex-1"></div>
     <form class="flex items-center bg-zinc-300 dark:bg-zinc-600 rounded-xl overflow-hidden relative h-9.5">
