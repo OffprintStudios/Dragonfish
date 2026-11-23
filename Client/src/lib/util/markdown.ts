@@ -6,25 +6,7 @@ import { align } from "@mdit/plugin-align";
 import { embed, type MarkdownItEmbedOptions } from "@mdit/plugin-embed";
 import { fullEmoji } from "@mdit/plugin-emoji";
 import { imgLazyload } from "@mdit/plugin-img-lazyload";
-
-const embedConfig: MarkdownItEmbedOptions = {
-    config: [
-        {
-            name: "youtube",
-            setup: (params: string) => {
-                const url = params.trim();
-                const match = url.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
-
-                if (match && match[1]) {
-                    const videoID = match[1];
-                    return `<iframe width="560" height="315" src="https://www.youtube.com/embed/${videoID}" frameborder="0" allowfullscreen></iframe>`;
-                }
-
-                return `<a href="${url}">${url}</a>`
-            }
-        }
-    ]
-}
+import { spoiler } from "@mdit/plugin-spoiler";
 
 function emphasis(md: MarkdownItType) {
     const defaultEmphasis = md.inline.ruler.__rules__.find(r => r.name === 'emphasis')?.fn;
@@ -99,63 +81,23 @@ function emphasis(md: MarkdownItType) {
     });
 }
 
-function spoilers(md: MarkdownItType) {
-    md.inline.ruler.before('emphasis', 'spoiler', (state: StateInline, silent: boolean) => {
-        const start = state.pos;
-        const src = state.src;
+const embedConfig: MarkdownItEmbedOptions = {
+    config: [
+        {
+            name: "youtube",
+            setup: (params: string) => {
+                const url = params.trim();
+                const match = url.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
 
-        // Must start with `||` (0x7c = '|')
-        if (src.charCodeAt(start) !== 0x7c || src.charCodeAt(start + 1) !== 0x7c) {
-            return false;
-        }
+                if (match && match[1]) {
+                    const videoID = match[1];
+                    return `<iframe width="560" height="315" src="https://www.youtube.com/embed/${videoID}" frameborder="0" allowfullscreen></iframe>`;
+                }
 
-        // Find closing `||`, ignoring escaped pipes `\|`
-        let searchPos = start + 2;
-        let closeIndex = -1;
-
-        while (searchPos < src.length - 1) {
-            const ch = src.charCodeAt(searchPos);
-
-            if (ch === 0x5c /* \ */) {
-                searchPos += 2;
-                continue;
+                return `<a href="${url}">${url}</a>`
             }
-
-            if (ch === 0x7c && src.charCodeAt(searchPos + 1) === 0x7c) {
-                closeIndex = searchPos;
-                break;
-            }
-
-            searchPos += 1;
         }
-
-        // Ignore empty `||||` or unclosed `||`
-        if (closeIndex === -1 || closeIndex === start + 2) {
-            return false;
-        }
-
-        if (!silent) {
-            const tokenOpen = state.push('spoiler_open', 'span', 1);
-            tokenOpen.markup = '||';
-            tokenOpen.attrSet('class', 'spoiler');
-            tokenOpen.attrSet('tabindex', '0');
-
-            // Tokenize inner content so **bold**, *italic*, _underline_, and links work inside
-            const oldPos = state.pos;
-            const oldPosMax = state.posMax;
-            state.pos = start + 2;
-            state.posMax = closeIndex;
-            state.md.inline.tokenize(state);
-            state.pos = oldPos;
-            state.posMax = oldPosMax;
-
-            const tokenClose = state.push('spoiler_close', 'span', -1);
-            tokenClose.markup = '||';
-        }
-
-        state.pos = closeIndex + 2;
-        return true;
-    });
+    ]
 }
 
 export const md = new MarkdownIt({
@@ -163,7 +105,7 @@ export const md = new MarkdownIt({
     linkify: true,
     typographer: true,
     breaks: true,
-}).use(emphasis).use(spoilers).use(anchor).use(align).use(fullEmoji).use(imgLazyload).use(embed, embedConfig);
+}).use(emphasis).use(spoiler).use(anchor).use(align).use(fullEmoji).use(imgLazyload).use(embed, embedConfig);
 
 export const purifyConfig: PurifyConfig = {
     ADD_TAGS: ['u', 'span', 'iframe', 'img'],

@@ -4,6 +4,6 @@
     let { children }: LayoutProps = $props();
 </script>
 
-<div class="paper relative w-full min-h-dvh bg-cr-background text-cr-text">
+<div class="paper relative w-full min-h-dvh h-auto bg-cr-background text-cr-text">
     {@render children()}
 </div>
