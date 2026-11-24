@@ -66,7 +66,7 @@ final class Blog: Model, @unchecked Sendable {
 
     init() { }
 
-    init(id: String? = nil, from formData: FormInfo) {
+    init(id: String? = nil, from formData: CreateForm) {
         self.id = generateID(with: id)
         self.title = formData.title
         self.body = formData.body
@@ -168,11 +168,12 @@ extension Blog {
             model.title = try SwiftSoup.clean(model.title, .none())!
             model.body = try SwiftSoup.clean(model.body, .none())!
             model.words = try countWords(of: model.body)
+
             return try await next.update(model, on: db)
         }
     }
 
-    struct FormInfo: Content, Validatable {
+    struct CreateForm: Content, Validatable {
         var title: String
         var body: String
 
@@ -180,9 +181,9 @@ extension Blog {
             validations.add(
                 "title",
                 as: String.self,
-                is: .count(3...72),
+                is: .count(3...48),
                 required: true,
-                customFailureDescription: "Blog titles should be between 3 and 72 characters long."
+                customFailureDescription: "Blog titles should be between 3 and 48 characters long."
             )
             validations.add(
                 "body",
@@ -190,6 +191,49 @@ extension Blog {
                 is: .count(3...),
                 required: true,
                 customFailureDescription: "Blogs must be at least 3 characters long."
+            )
+        }
+    }
+
+    struct UpdateForm: Content, Validatable {
+        var title: String
+        var body: String
+        var nsfw: Bool
+        var license: ContentLicense
+        var visibility: ContentVisibility
+        var publishedOn: Date?
+
+        static func validations(_ validations: inout Validations) {
+            validations.add(
+                "title",
+                as: String.self,
+                is: .count(3...48),
+                required: true,
+                customFailureDescription: "Blog titles should be between 3 and 48 characters long.",
+            )
+            validations.add(
+                "body",
+                as: String.self,
+                is: .count(3...),
+                required: true,
+                customFailureDescription: "Blogs must be at least 3 characters long.",
+            )
+            validations.add(
+                "nsfw",
+                as: Bool.self,
+                required: true,
+            )
+            validations.add(
+                "license",
+                as: String.self,
+                is: .in(ContentLicense.allCases.map(\.rawValue)),
+                required: true,
+            )
+            validations.add(
+                "visibility",
+                as: String.self,
+                is: .in(ContentVisibility.allCases.map(\.rawValue)),
+                required: true,
             )
         }
     }

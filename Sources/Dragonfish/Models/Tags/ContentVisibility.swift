@@ -1,7 +1,7 @@
 import Vapor
 import Fluent
 
-enum ContentVisibility: String, Codable {
+enum ContentVisibility: String, Codable, CaseIterable {
     static let schema = "content_visibility"
 
     case `private` = "Private"

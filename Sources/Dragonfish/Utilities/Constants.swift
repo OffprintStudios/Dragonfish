@@ -24,6 +24,9 @@ let MAX_PROFILE_LIMIT: Int32 = 3
 /// A generic error message for things that should be obfuscated by obscurity
 let GENERIC_ERROR_MESSAGE: String = "Something went wrong! Try again in a little bit."
 
+/// A generic error message for all unauthorized requests
+let UNAUTHORIZED_ERROR_MESSAGE: String = "You don't have permission to do that!"
+
 /// The minimum word count for works before publishing
 let MIN_WORD_COUNT: Int64 = 750
 

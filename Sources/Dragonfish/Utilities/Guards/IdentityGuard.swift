@@ -11,7 +11,7 @@ struct IdentityGuard: AsyncMiddleware {
             if optional {
                 return try await next.respond(to: request)
             }
-            throw Abort(.unauthorized, reason: "You don't have permission to do that!")
+            throw Abort(.unauthorized, reason: UNAUTHORIZED_ERROR_MESSAGE)
         }
 
         guard try await Session.query(on: request.db)
@@ -19,26 +19,26 @@ struct IdentityGuard: AsyncMiddleware {
             .filter(\.$account.$id == sessionToken.accountId)
             .filter(\.$expiresOn > Date.now)
             .first() != nil else {
-            throw Abort(.unauthorized, reason: "You don't have permission to do that!")
+            throw Abort(.unauthorized, reason: UNAUTHORIZED_ERROR_MESSAGE)
         }
 
         guard let account = try await Account.find(sessionToken.accountId, on: request.db) else {
-            throw Abort(.internalServerError, reason: "Something went wrong validating your session!")
+            throw Abort(.unauthorized, reason: UNAUTHORIZED_ERROR_MESSAGE)
         }
 
         guard canAccess(needs: requiredRoles, has: account.roles) else {
-            throw Abort(.unauthorized, reason: "You don't have permission to do that!")
+            throw Abort(.unauthorized, reason: UNAUTHORIZED_ERROR_MESSAGE)
         }
 
         if checkProfile == true {
             let possibleID = request.parameters.get("profileID") ?? request.query["profileID"]
             guard let profileID = possibleID else {
-                throw Abort(.badRequest, reason: "You must include a `profileID` in your query parameters!")
+                throw Abort(.unauthorized, reason: UNAUTHORIZED_ERROR_MESSAGE)
             }
 
             guard let profile = try? await account.$profiles.query(on: request.db).filter(\.$id == profileID).first() else {
                 request.logger.error("An attempt to authorize a profile's access level has failed. [Profile ID: \(profileID)] [Account ID: \(account.id?.uuidString ?? "")]")
-                throw Abort(.unauthorized, reason: "You don't have permission to do that!")
+                throw Abort(.unauthorized, reason: UNAUTHORIZED_ERROR_MESSAGE)
             }
 
             request.user = .init(account: account, profile: profile)

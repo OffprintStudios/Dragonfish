@@ -1,7 +1,7 @@
 import Vapor
 import Fluent
 
-enum ContentLicense: String, Codable {
+enum ContentLicense: String, Codable, CaseIterable {
     static let schema = "content_license"
 
     /// Allows remixing and commercial use so long as attribution is given to the original author(s).

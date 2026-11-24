@@ -1,7 +1,7 @@
 import Vapor
 import Fluent
 
-enum ContentRating: String, Codable {
+enum ContentRating: String, Codable, CaseIterable {
     static let schema = "content_rating"
 
     case everyone = "Everyone"

@@ -29,7 +29,7 @@ struct AccountController: RouteCollection {
     @Sendable
     func verifyOwnership(request: Request) async throws -> HTTPResponseStatus {
         guard request.user?.profile != nil else {
-            throw Abort(.unauthorized, reason: "You don't have permission to do that.")
+            throw Abort(.unauthorized, reason: UNAUTHORIZED_ERROR_MESSAGE)
         }
 
         return .ok
@@ -38,7 +38,7 @@ struct AccountController: RouteCollection {
     @Sendable
     func getAll(request: Request) async throws -> [ProfileObject] { 
         guard let account = request.user?.account else {
-            throw Abort(.unauthorized, reason: "You don't have permission to do that.")
+            throw Abort(.unauthorized, reason: UNAUTHORIZED_ERROR_MESSAGE)
         }
 
         return try await account.$profiles.get(on: request.db).map { $0.toObject() }
@@ -47,7 +47,7 @@ struct AccountController: RouteCollection {
     @Sendable
     func createProfile(request: Request) async throws -> HTTPStatus { 
         guard let account = request.user?.account else {
-            throw Abort(.unauthorized, reason: "You don't have permission to do that.")
+            throw Abort(.unauthorized, reason: UNAUTHORIZED_ERROR_MESSAGE)
         }
 
         let profiles = try await account.$profiles.get(on: request.db)
