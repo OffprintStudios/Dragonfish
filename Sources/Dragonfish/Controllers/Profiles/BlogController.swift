@@ -2,48 +2,27 @@ import Vapor
 import Fluent
 import JWT
 
-struct ProfileController: RouteCollection {
+struct BlogController: RouteCollection {
     func boot(routes: any RoutesBuilder) throws {
-        let profiles = routes.grouped("profiles")
+        let secure = routes.grouped(
+            Session.Token.authenticator(), 
+            Session.Token.guardMiddleware(), 
+            IdentityGuard(needs: [.user], checkProfile: true)
+        )
 
-        profiles.group(":profileID") { route in 
-            route.get("", use: getProfile)
-            route.group("blogs") { blogs in 
-                let secure = blogs.grouped(
-                    Session.Token.authenticator(), 
-                    Session.Token.guardMiddleware(), 
-                    IdentityGuard(needs: [.user], checkProfile: true)
-                )
-
-                blogs.get("", use: getPublicBlogs)
-                secure.get("all", use: getAllBlogs)
-                secure.post("new", use: createBlog)
-                blogs.group(":blogID") { blogs in 
-                    let secure = blogs.grouped(
-                        Session.Token.authenticator(), 
-                        Session.Token.guardMiddleware(), 
-                        IdentityGuard(needs: [.user], checkProfile: true)
-                    )
-
-                    blogs.get("", use: getPublicBlog)
-                    secure.group(":blogID") { route in 
-                        secure.patch("update", use: updateBlog)
-                        secure.patch("delete", use: deleteBlog)
-                    }
-                }
-            }
-        }
-    }
-
-    @Sendable
-    func getProfile(request: Request) async throws -> ProfileObject {
-        let id = request.parameters.get("profileID")!
-
-        guard let profile = try await Profile.find(id, on: request.db) else {
-            throw Abort(.notFound, reason: "You are lost in a sea of faces, traveler. Where will you go next?")
+        routes.get("", use: getPublicBlogs)
+        routes.group(":blogID") { blog in 
+            blog.get("", use: getPublicBlog)
         }
 
-        return profile.toObject()
+        secure.get("all", use: getAllBlogs)
+        secure.post("new", use: createBlog)
+        secure.group(":blogID") { secureBlog in 
+            secureBlog.get("draft", use: getBlog)
+            secureBlog.patch("update", use: updateBlog)
+            secureBlog.patch("publish", use: publishBlog)
+            secureBlog.patch("delete", use: deleteBlog)
+        }
     }
 
     @Sendable
@@ -94,7 +73,21 @@ struct ProfileController: RouteCollection {
             throw Abort(.unauthorized, reason: UNAUTHORIZED_ERROR_MESSAGE)
         }
 
-        return try await profile.$blogs.query(on: request.db).paginate(for: request).map { $0.toObject() }
+        return try await profile.$blogs.query(on: request.db).with(\.$author).paginate(for: request).map { $0.toObject() }
+    }
+
+    @Sendable
+    func getBlog(request: Request) async throws -> BlogObject {
+        let blogID = request.parameters.get("blogID")!
+        guard let profile = request.user?.profile else {
+            throw Abort(.unauthorized, reason: UNAUTHORIZED_ERROR_MESSAGE)
+        }
+
+        guard let blog = try await profile.$blogs.query(on: request.db).with(\.$author).filter(\.$id == blogID).first() else {
+            throw Abort(.notFound, reason: "This blog doesn't appear to exist.")
+        }
+
+        return blog.toObject()
     }
 
     @Sendable
@@ -137,6 +130,32 @@ struct ProfileController: RouteCollection {
 
         try await blog.save(on: request.db)
         return blog.toObject()
+    }
+
+    @Sendable
+    func publishBlog(request: Request) async throws -> HTTPResponseStatus {
+        struct PublishBlog: Content {
+            var publishedOn: Date?
+        }
+        let formInfo = try request.content.decode(PublishBlog.self)
+
+        guard let profile = request.user?.profile else {
+            throw Abort(.unauthorized, reason: UNAUTHORIZED_ERROR_MESSAGE)
+        }
+
+        let blogID = request.parameters.get("blogID")!
+        guard let blog = try await profile.$blogs.query(on: request.db).filter(\.$id == blogID).first() else {
+            throw Abort(.notFound, reason: "This blog doesn't appear to exist.")
+        }
+
+        if formInfo.publishedOn != nil {
+            blog.publishedOn = formInfo.publishedOn
+        } else {
+            blog.publishedOn = Date.now
+        }
+
+        try await blog.save(on: request.db)
+        return .ok
     }
 
     @Sendable

@@ -247,6 +247,38 @@ article {
     p {
         @apply py-2;
     }
+
+    a {
+        @apply text-blue-500 underline hover:no-underline;
+    }
+
+    ul {
+        @apply list-disc ml-8 py-2;
+    }
+
+    ol {
+        @apply list-decimal ml-8 py-2;
+    }
+
+    p > code {
+        @apply bg-cr-select p-1 rounded-lg;
+    }
+
+    pre {
+        @apply bg-cr-select p-2 rounded-lg my-2 whitespace-pre-wrap;
+    }
+
+    blockquote {
+        @apply border-l-cr-tool border-l-2 ml-4 pl-4;
+    }
+
+    iframe {
+        @apply mx-auto py-2;
+    }
+
+    hr {
+        @apply border-cr-tool my-6;
+    }
 }
 
 /* Button */
@@ -306,11 +338,27 @@ article {
 .cr-button {
     @apply flex items-center justify-center px-2.5 py-2 transition transform focus:ring-0 m-0 text-sm select-none rounded-lg relative all-small-caps font-semibold z-5 cursor-pointer;
     letter-spacing: 1px;
-    color: white;
+    color: rgb(var(--cr-header-color));
     font-family: var(--body-text), sans-serif;
-    background: rgb(var(--cr-header-color));
+    background: transparent;
 
     &:hover {
+        background: rgb(var(--cr-button-hover));
+    }
+
+    &.primary,
+    &.active {
+        color: white;
+        background: rgb(var(--cr-header-color));
+    }
+
+    &.primary:hover,
+    &.active:hover {
+        color: rgb(var(--cr-header-color));
+        background: rgba(var(--cr-select-bg));
+    }
+
+    &.primary.active {
         color: rgb(var(--cr-header-color));
         background: rgba(var(--cr-select-bg));
     }
@@ -338,6 +386,14 @@ article {
 
 :-moz-any(.btn) {
     @apply text-sm;
+}
+
+.dropdown-btn {
+    @apply flex items-center w-full px-1 py-0.5 rounded-lg transition;
+
+    &.cr {
+        @apply hover:bg-cr-select!;
+    }
 }
 
 /* Spoiler */

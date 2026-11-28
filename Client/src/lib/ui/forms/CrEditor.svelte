@@ -9,14 +9,16 @@
     interface Props {
         name: string,
         placeholder?: string;
+        value?: string;
+        defaultPreview?: boolean;
     }
 
-    let { name, placeholder = "All great journeys begins with a single step..." }: Props = $props();
-    let value = $state("");
-    let editMode = $state(true);
+    let { name, placeholder = "All great journeys begins with a single step...", value = $bindable(""), defaultPreview = false }: Props = $props();
+    // svelte-ignore state_referenced_locally
+    let editMode = $state(!defaultPreview);
     let cleanedText = $derived.by(() => {
         const html = md.render(value);
-        if (!browser) return;
+        if (!browser) return '';
         return DOMPurify.sanitize(html, purifyConfig);
     });
     let wordCount = $derived.by(() => { return countWords(cleanedText ?? ""); });

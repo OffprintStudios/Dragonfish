@@ -31,7 +31,7 @@
                 <MarkdownHelp />
             </Popup>
             <span class="mx-1"></span>
-            <button class="cr-button" type="submit">
+            <button class="cr-button primary" type="submit">
                 <span class="button-icon"><IconDeviceFloppy size="1.125rem" /></span>
                 <span class="button-text">Save</span>
             </button>

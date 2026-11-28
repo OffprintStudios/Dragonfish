@@ -4,7 +4,6 @@ import { BASE_URL } from "#lib/http";
 import type { ProfileForm } from "#lib/models/accounts";
 import { SESSION_TOKEN_KEY } from "#lib/util/constants.ts";
 
-
 export const load: PageServerLoad = async ({ cookies }) => {
     const token = cookies.get(SESSION_TOKEN_KEY);
 
@@ -26,8 +25,6 @@ export const actions = {
             username: username!.toString().trim(),
             links: [],
         }
-
-        console.log(JSON.stringify(formInfo));
 
         const apiResponse = await fetch(`${BASE_URL}/accounts/profiles/create`, {
             method: "POST",

@@ -1,3 +1,5 @@
+import type { ContentLicense, ContentVisibility } from "../tags";
+
 export interface Blog {
     id: string;
     authorID: string;
@@ -10,7 +12,8 @@ export interface Blog {
     likes: number;
     dislikes: number;
     nsfw: boolean;
-    license: string;
+    license: ContentLicense;
+    visibility: ContentVisibility;
     allowComments: boolean;
     editedOn?: Date
     publishedOn?: Date

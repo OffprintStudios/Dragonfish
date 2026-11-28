@@ -15,6 +15,7 @@ struct BlogObject: Content {
     var dislikes: Int64
     var nsfw: Bool
     var license: ContentLicense
+    var visibility: ContentVisibility
     var allowComments: Bool
     var editedOn: Date?
     var publishedOn: Date?

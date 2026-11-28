@@ -7,11 +7,12 @@
     interface Props {
         showNav?: boolean,
         returnURL?: string,
+        leftTools?: Snippet,
         header: Snippet,
         tools: Snippet,
     }
 
-    let { showNav = true, returnURL = "/create", header, tools }: Props = $props();
+    let { showNav = true, returnURL = "/create", leftTools, header, tools }: Props = $props();
 </script>
 
 <div class="sticky top-0 w-full z-50 bg-cr-background border-b border-cr-header drop-shadow-xl">
@@ -50,14 +51,15 @@
                     <span class="text-sm font-semibold all-small-caps tracking-wide relative top-[-0.075rem]">Blogs</span>
                 </a>
             {:else}
-                <a
-                    class="flex items-center text-cr-header pl-2 pr-4 py-2 transition rounded-lg hover:bg-cr-hover"
-                    // eslint-disable-next-line svelte/no-navigation-without-resolve
-                    href={returnURL}
-                >
-                    <span class="mr-0.5"><IconChevronLeft size="1.5rem" /></span>
-                    <span class="text-sm font-semibold all-small-caps tracking-wide relative top-[-0.075rem]">Back</span>
+                <!--eslint-disable-next-line svelte/no-navigation-without-resolve-->
+                <a class="cr-button" href={returnURL}>
+                    <span class="button-icon"><IconChevronLeft size="1rem" /></span>
+                    <span class="button-text">Back</span>
                 </a>
+                {#if leftTools}
+                    <span class="mx-2 relative -top-0.5 text-2xl font-extralight text-cr-header">|</span>
+                    {@render leftTools()}
+                {/if}
             {/if}
         </div>
         <div class="flex items-center justify-center w-1/3">

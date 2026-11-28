@@ -32,7 +32,9 @@ let package = Package(
         // Job queues
         .package(url: "https://github.com/vapor/queues-redis-driver.git", from: "1.1.2"),
         // Redis
-        .package(url: "https://github.com/vapor/redis.git", from: "4.14.0")
+        .package(url: "https://github.com/vapor/redis.git", from: "4.14.0"),
+        // Markdown
+        .package(url: "https://github.com/swiftlang/swift-markdown.git", branch: "main"),
     ],
     targets: [
         .executableTarget(
@@ -51,7 +53,8 @@ let package = Package(
                 .product(name: "SwiftSoup", package: "SwiftSoup"),
                 .product(name: "SotoS3", package: "soto"),
                 .product(name: "QueuesRedisDriver", package: "queues-redis-driver"),
-                .product(name: "Redis", package: "redis")
+                .product(name: "Redis", package: "redis"),
+                .product(name: "Markdown", package: "swift-markdown"),
             ],
             swiftSettings: swiftSettings
         ),

@@ -86,6 +86,7 @@ final class Blog: Model, @unchecked Sendable {
             dislikes: self.dislikes,
             nsfw: self.nsfw,
             license: self.license,
+            visibility: self.visibility,
             allowComments: self.allowComments,
             editedOn: self.editedOn,
             publishedOn: self.publishedOn,
@@ -157,8 +158,8 @@ extension Blog {
     struct Middleware: AsyncModelMiddleware {
         func create(model: Blog, on db: any Database, next: any AnyAsyncModelResponder) async throws {
             model.title = try SwiftSoup.clean(model.title, .none())!
-            model.body = try SwiftSoup.clean(model.body, .none())!
-            model.words = try countWords(of: model.body)
+            model.body = cleanMarkdown(model.body)
+            model.words = try countWords(of: try SwiftSoup.clean(model.body, .none())!)
             model.license = .ccby
             model.visibility = .private
             return try await next.create(model, on: db)
@@ -166,8 +167,8 @@ extension Blog {
 
         func update(model: Blog, on db: any Database, next: any AnyAsyncModelResponder) async throws {
             model.title = try SwiftSoup.clean(model.title, .none())!
-            model.body = try SwiftSoup.clean(model.body, .none())!
-            model.words = try countWords(of: model.body)
+            model.body = cleanMarkdown(model.body)
+            model.words = try countWords(of: try SwiftSoup.clean(model.body, .none())!)
 
             return try await next.update(model, on: db)
         }
